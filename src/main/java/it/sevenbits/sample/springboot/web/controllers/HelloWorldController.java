@@ -1,4 +1,4 @@
-package it.sevenbits.sample.springboot.controllers;
+package it.sevenbits.sample.springboot.web.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
