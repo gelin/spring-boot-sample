@@ -11,4 +11,6 @@ public interface ItemsRepository {
 
     List<Item> getAllItems();
 
+    Item create(Item newItem);
+
 }

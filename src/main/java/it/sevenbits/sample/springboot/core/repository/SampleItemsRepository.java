@@ -14,17 +14,28 @@ import java.util.List;
 public class SampleItemsRepository implements ItemsRepository {
 
     private final List<Item> items = new ArrayList<>();
+    private int nextIndex = 0;
 
     public SampleItemsRepository() {
-        //...
-        items.add(new Item(0, "zero"));
-        items.add(new Item(1, "one"));
-        items.add(new Item(2, "two"));
+        add(new Item("one"));
+        add(new Item("two"));
+        add(new Item("three"));
+    }
+
+    private Item add(Item newItem) {
+        Item createdItem = new Item(++nextIndex, newItem.getName());
+        items.add(createdItem);
+        return createdItem;
     }
 
     @Override
     public List<Item> getAllItems() {
         return Collections.unmodifiableList(items);
+    }
+
+    @Override
+    public Item create(Item newItem) {
+        return add(newItem);
     }
 
 }
