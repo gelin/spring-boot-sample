@@ -3,9 +3,7 @@ package it.sevenbits.sample.springboot.core.repository;
 import it.sevenbits.sample.springboot.core.model.Item;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Keeps items in memory.
@@ -13,7 +11,7 @@ import java.util.List;
 @Repository
 public class SampleItemsRepository implements ItemsRepository {
 
-    private final List<Item> items = new ArrayList<>();
+    private final Map<Long, Item> items = new HashMap<>();
     private int nextIndex = 0;
 
     public SampleItemsRepository() {
@@ -24,18 +22,25 @@ public class SampleItemsRepository implements ItemsRepository {
 
     private Item add(Item newItem) {
         Item createdItem = new Item(++nextIndex, newItem.getName());
-        items.add(createdItem);
+        items.put(createdItem.getId(), createdItem);
         return createdItem;
     }
 
     @Override
     public List<Item> getAllItems() {
-        return Collections.unmodifiableList(items);
+        List<Item> result = new ArrayList<>(items.size());
+        result.addAll(items.values());
+        return Collections.unmodifiableList(result);
     }
 
     @Override
     public Item create(Item newItem) {
         return add(newItem);
+    }
+
+    @Override
+    public Item getItemById(long id) {
+        return items.get(id);
     }
 
 }

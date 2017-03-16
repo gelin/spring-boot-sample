@@ -13,4 +13,6 @@ public interface ItemsRepository {
 
     Item create(Item newItem);
 
+    Item getItemById(long id);
+
 }
