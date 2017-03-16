@@ -43,4 +43,16 @@ public class SampleItemsRepository implements ItemsRepository {
         return items.get(id);
     }
 
+    @Override
+    public Item update(long id, Item newItem) {
+        Item existingItem = items.get(id);
+        if (existingItem == null) {
+            return null;
+        } else {
+            Item updatedItem = new Item(id, newItem.getName());
+            items.put(id, updatedItem);
+            return updatedItem;
+        }
+    }
+
 }

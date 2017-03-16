@@ -15,4 +15,6 @@ public interface ItemsRepository {
 
     Item getItemById(long id);
 
+    Item update(long id, Item newItem);
+
 }
