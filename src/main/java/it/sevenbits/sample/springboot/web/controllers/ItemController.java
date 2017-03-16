@@ -47,4 +47,15 @@ public class ItemController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity delete(@PathVariable long id) {
+        boolean deleted = itemsRepository.delete(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

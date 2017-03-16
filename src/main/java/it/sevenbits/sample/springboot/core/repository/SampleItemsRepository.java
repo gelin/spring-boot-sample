@@ -55,4 +55,14 @@ public class SampleItemsRepository implements ItemsRepository {
         }
     }
 
+    @Override
+    public boolean delete(long id) {
+        Item existingItem = items.get(id);
+        if (existingItem == null) {
+            return false;
+        } else {
+            items.remove(id);
+            return true;
+        }
+    }
 }
