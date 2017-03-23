@@ -10,6 +10,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 /**
  * Provides operations for one item.
  */
@@ -31,6 +34,8 @@ public class ItemController {
         if (result == null) {
             return ResponseEntity.notFound().build();
         } else {
+            result.add(linkTo(methodOn(ItemController.class).get(id)).withSelfRel());
+            result.add(linkTo(methodOn(ItemsController.class).list()).withRel("all"));
             return ResponseEntity.ok(result);
         }
     }

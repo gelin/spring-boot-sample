@@ -22,7 +22,7 @@ public class SampleItemsRepository implements ItemsRepository {
 
     private Item add(Item newItem) {
         Item createdItem = new Item(++nextIndex, newItem.getName());
-        items.put(createdItem.getId(), createdItem);
+        items.put(createdItem.getItemId(), createdItem);
         return createdItem;
     }
 
