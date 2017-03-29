@@ -10,9 +10,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
 /**
  * Provides operations for one item.
  */
@@ -30,12 +27,10 @@ public class ItemController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Item> get(@PathVariable long id) {
-        Item result = itemsRepository.getItemById(id);
+        Item result = itemsRepository.findOne(id);
         if (result == null) {
             return ResponseEntity.notFound().build();
         } else {
-            result.add(linkTo(methodOn(ItemController.class).get(id)).withSelfRel());
-            result.add(linkTo(methodOn(ItemsController.class).list()).withRel("all"));
             return ResponseEntity.ok(result);
         }
     }
@@ -43,7 +38,8 @@ public class ItemController {
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Item> update(@PathVariable long id, @RequestBody Item newItem) {
-        Item result = itemsRepository.update(id, newItem);
+        Item updatingItem = new Item(id, newItem.getName());
+        Item result = itemsRepository.save(updatingItem);
         if (result == null) {
             return ResponseEntity.notFound().build();
         } else {
@@ -55,12 +51,8 @@ public class ItemController {
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity delete(@PathVariable long id) {
-        boolean deleted = itemsRepository.delete(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        itemsRepository.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

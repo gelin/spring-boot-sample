@@ -2,29 +2,38 @@ package it.sevenbits.sample.springboot.core.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.hateoas.ResourceSupport;
+
+import javax.persistence.*;
 
 /**
  * A simple Item class.
  */
-public class Item extends ResourceSupport {
+@Entity
+public class Item {
 
-    private final long item_id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private final Long id;
+    @Column
     private final String name;
 
+    protected Item() {
+        id = null;
+        name = null;
+    }
+
     @JsonCreator
-    public Item(@JsonProperty("item_id") long id, @JsonProperty("name") String name) {
-        this.item_id = id;
+    public Item(@JsonProperty("id") Long id, @JsonProperty("name") String name) {
+        this.id = id;
         this.name = name;
     }
 
     public Item(String name) {
-        this(0, name);
+        this(0L, name);
     }
 
-    @JsonProperty("item_id")
-    public long getItemId() {
-        return item_id;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

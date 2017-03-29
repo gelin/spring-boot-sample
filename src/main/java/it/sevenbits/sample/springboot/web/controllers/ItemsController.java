@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +32,15 @@ public class ItemsController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public List<Item> list() {
-        return itemsRepository.getAllItems();
+        List<Item> result = new ArrayList<>();
+        itemsRepository.findAll().forEach(result::add);
+        return result;
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Item> create(@RequestBody Item newItem) {
-        Item createdItem = itemsRepository.create(newItem);
+        Item createdItem = itemsRepository.save(newItem);
         URI location = UriComponentsBuilder.fromPath("/items/").path(String.valueOf(createdItem.getId())).build().toUri();
         return ResponseEntity.created(location).body(createdItem);
     }

@@ -1,22 +1,10 @@
 package it.sevenbits.sample.springboot.core.repository;
 
 import it.sevenbits.sample.springboot.core.model.Item;
-
-import java.util.List;
+import org.springframework.data.repository.CrudRepository;
 
 /**
  * Sample repository of items.
  */
-public interface ItemsRepository {
-
-    List<Item> getAllItems();
-
-    Item create(Item newItem);
-
-    Item getItemById(long id);
-
-    Item update(long id, Item newItem);
-
-    boolean delete(long id);
-
+public interface ItemsRepository extends CrudRepository<Item, Long> {
 }
