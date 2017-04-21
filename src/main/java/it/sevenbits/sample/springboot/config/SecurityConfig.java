@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,7 +20,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 
@@ -74,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 response.setContentType("application/json");
                 response.getWriter().println("{\n" +
                         "  \"status\": 200,\n" +
-                        "  \"message\": \"Login successful.\",\n" +
+                        "  \"message\": \"Login successful.\"\n" +
                         "}");
             }
         };
@@ -93,12 +94,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication().dataSource(dataSource);
+        auth.jdbcAuthentication().dataSource(dataSource)
+            .passwordEncoder(passwordEncoder());
                 // find users in database
 //                .withUser("admin").password("admin").roles("ADMIN", "USER")
                 // create admin user
 //                .and().withUser("user").password("user").roles("USER");
                 // create ordinary user
+    }
+
+    private PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
