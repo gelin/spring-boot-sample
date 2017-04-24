@@ -1,5 +1,6 @@
 package it.sevenbits.sample.springboot.config;
 
+import it.sevenbits.sample.springboot.web.security.JwtLoginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
@@ -7,15 +8,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,18 +38,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .exceptionHandling()
         .authenticationEntryPoint(authenticationEntryPoint())
         .and()
+        .authorizeRequests().antMatchers("/login").permitAll()
+        .and()
         .authorizeRequests().anyRequest().fullyAuthenticated()
-        // all requests must be authorized to fully authenticated users (not "remembered")
         .and()
-        .formLogin().usernameParameter("username").passwordParameter("password")
-        // enable form authentication with specified form parameter names
-        .successHandler(successHandler())
-        .failureHandler(failureHandler())
-        .loginProcessingUrl("/login").permitAll()
-        // define URL to verify credentials and allow access to it
-        .and()
-        .logout().logoutUrl("/logout").permitAll();
-        // define logout URL and allow access to it
+        .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    private JwtLoginFilter loginFilter() throws Exception {
+        return new JwtLoginFilter("/login", authenticationManager());
     }
 
     private AuthenticationEntryPoint authenticationEntryPoint() {
@@ -63,31 +57,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     throws IOException, ServletException {
                 response.setContentType("application/json");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "POST /login to authorize.");
-            }
-        };
-    }
-
-    private AuthenticationSuccessHandler successHandler() {
-        return new SimpleUrlAuthenticationSuccessHandler() {
-            public void onAuthenticationSuccess(HttpServletRequest request,
-                                                HttpServletResponse response, Authentication authentication)
-                    throws IOException, ServletException {
-                response.setContentType("application/json");
-                response.getWriter().println("{\n" +
-                        "  \"status\": 200,\n" +
-                        "  \"message\": \"Login successful.\"\n" +
-                        "}");
-            }
-        };
-    }
-
-    private AuthenticationFailureHandler failureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler() {
-            public void onAuthenticationFailure(HttpServletRequest request,
-                                                HttpServletResponse response, AuthenticationException exception)
-                    throws IOException, ServletException {
-                response.setContentType("application/json");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid login and password.");
             }
         };
     }
