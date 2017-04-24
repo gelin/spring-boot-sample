@@ -15,3 +15,7 @@ logging:
   level:
     root: WARN
     org.springframework.web: INFO
+
+jwt:
+  tokenIssuer: 'denis.nelubin@7bits.it'
+  tokenSigningKey: 'abrakadabra'
