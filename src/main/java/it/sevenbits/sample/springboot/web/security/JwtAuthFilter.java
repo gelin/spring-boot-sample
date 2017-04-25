@@ -38,16 +38,15 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         String token;
-        // extract token...
         try {
             String authHeader = request.getHeader("Authorization");
+            // extract token from header...
             Matcher m = BEARER_AUTH_PATTERN.matcher(authHeader);
             if (m.matches()) {
                 token = m.group(TOKEN_GROUP);
             } else {
                 throw new JwtAuthenticationException("Invalid Authorization header: " + authHeader);
             }
-
         } catch (Exception e) {
             throw new JwtAuthenticationException("Failed to get Authorization header", e);
         }

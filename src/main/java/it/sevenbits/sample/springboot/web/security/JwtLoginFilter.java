@@ -2,7 +2,6 @@ package it.sevenbits.sample.springboot.web.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.sample.springboot.web.models.Login;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,9 +24,10 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler failureHandler;
 
-    public JwtLoginFilter(String defaultProcessUrl, AuthenticationManager authenticationManager,
-                          @Autowired AuthenticationSuccessHandler successHandler,
-                          @Autowired AuthenticationFailureHandler failureHandler) {
+    public JwtLoginFilter(String defaultProcessUrl,
+                          AuthenticationManager authenticationManager,
+                          AuthenticationSuccessHandler successHandler,
+                          AuthenticationFailureHandler failureHandler) {
         super(defaultProcessUrl);
         setAuthenticationManager(authenticationManager);
         this.successHandler = successHandler;

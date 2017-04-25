@@ -11,10 +11,14 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class JwtSettings {
 
-    @Value("${jwt.tokenIssuer}")
     private String tokenIssuer;
-    @Value("${jwt.tokenSigningKey}")
     private String tokenSigningKey;
+
+    public JwtSettings(@Value("${jwt.tokenIssuer}") final String tokenIssuer,
+                       @Value("${jwt.tokenSigningKey}") final String tokenSigningKey) {
+        this.tokenIssuer = tokenIssuer;
+        this.tokenSigningKey = tokenSigningKey;
+    }
 
     public String getTokenIssuer() {
         return tokenIssuer;
