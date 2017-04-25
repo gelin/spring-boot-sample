@@ -2,7 +2,6 @@ package it.sevenbits.sample.springboot.web.security;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import java.io.IOException;
 /**
  * Returns 401 for unsuccessful authentication.
  */
-@Component
 public class JwtLoginFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(

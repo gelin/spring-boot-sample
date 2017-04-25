@@ -20,8 +20,12 @@ import java.io.IOException;
 @Component
 public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final JwtTokenService tokenService;
+
     @Autowired
-    private JwtTokenService tokenService;
+    public JwtLoginSuccessHandler(final JwtTokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     @Override
     public void onAuthenticationSuccess(

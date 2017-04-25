@@ -1,12 +1,12 @@
 package it.sevenbits.sample.springboot.web.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.FilterChain;
@@ -25,18 +25,20 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
     private static final Pattern BEARER_AUTH_PATTERN = Pattern.compile("^Bearer\\s+(.*)$");
     private static final int TOKEN_GROUP = 1;
 
-    @Autowired
-    private JwtAuthFailureHandler failureHandler;
+    private final AuthenticationFailureHandler failureHandler;
 
-    public JwtAuthFilter(RequestMatcher matcher, AuthenticationManager authenticationManager) {
+    public JwtAuthFilter(RequestMatcher matcher, AuthenticationManager authenticationManager,
+                         AuthenticationFailureHandler failureHandler) {
         super(matcher);
         setAuthenticationManager(authenticationManager);
+        this.failureHandler = failureHandler;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         String token;
+        // extract token...
         try {
             String authHeader = request.getHeader("Authorization");
             Matcher m = BEARER_AUTH_PATTERN.matcher(authHeader);

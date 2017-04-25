@@ -8,6 +8,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,14 +22,16 @@ import java.io.IOException;
  */
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    @Autowired
-    private JwtLoginSuccessHandler successHandler;
-    @Autowired
-    private JwtLoginFailureHandler failureHandler;
+    private final AuthenticationSuccessHandler successHandler;
+    private final AuthenticationFailureHandler failureHandler;
 
-    public JwtLoginFilter(String defaultProcessUrl, AuthenticationManager authenticationManager) {
+    public JwtLoginFilter(String defaultProcessUrl, AuthenticationManager authenticationManager,
+                          @Autowired AuthenticationSuccessHandler successHandler,
+                          @Autowired AuthenticationFailureHandler failureHandler) {
         super(defaultProcessUrl);
         setAuthenticationManager(authenticationManager);
+        this.successHandler = successHandler;
+        this.failureHandler = failureHandler;
     }
 
     @Override
