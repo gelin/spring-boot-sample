@@ -23,22 +23,25 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler failureHandler;
+    private final ObjectMapper objectMapper;
 
     public JwtLoginFilter(String defaultProcessUrl,
                           AuthenticationManager authenticationManager,
                           AuthenticationSuccessHandler successHandler,
-                          AuthenticationFailureHandler failureHandler) {
+                          AuthenticationFailureHandler failureHandler,
+                          ObjectMapper objectMapper) {
         super(defaultProcessUrl);
         setAuthenticationManager(authenticationManager);
         this.successHandler = successHandler;
         this.failureHandler = failureHandler;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        Login login = new ObjectMapper().readValue(request.getInputStream(), Login.class);
+        Login login = objectMapper.readValue(request.getInputStream(), Login.class);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword());
         return getAuthenticationManager().authenticate(authentication);

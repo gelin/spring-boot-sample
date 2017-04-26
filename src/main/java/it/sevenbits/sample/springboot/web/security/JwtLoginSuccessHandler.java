@@ -21,10 +21,12 @@ import java.io.IOException;
 public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenService tokenService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public JwtLoginSuccessHandler(final JwtTokenService tokenService) {
+    public JwtLoginSuccessHandler(final JwtTokenService tokenService, ObjectMapper objectMapper) {
         this.tokenService = tokenService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json");
-        new ObjectMapper().writeValue(response.getOutputStream(), new Token(token));
+        objectMapper.writeValue(response.getOutputStream(), new Token(token));
 //        response.getWriter().println("{\n" +
 //                "  \"status\": 200,\n" +
 //                "  \"message\": \"Login successful.\"\n" +

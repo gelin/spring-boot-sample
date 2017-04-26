@@ -1,5 +1,6 @@
 package it.sevenbits.sample.springboot.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.sample.springboot.web.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,15 +31,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final DataSource usersDataSource;
     private final AuthenticationProvider jwtAuthenticationProvider;
     private final AuthenticationSuccessHandler jwtLoginSuccessHandler;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public SecurityConfig(
             @Qualifier("itemsDataSource") final DataSource usersDataSource,
             AuthenticationProvider jwtAuthenticationProvider,
-            AuthenticationSuccessHandler jwtLoginSuccessHandler) {
+            AuthenticationSuccessHandler jwtLoginSuccessHandler,
+            ObjectMapper objectMapper) {
         this.usersDataSource = usersDataSource;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.jwtLoginSuccessHandler = jwtLoginSuccessHandler;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -59,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private JwtLoginFilter loginFilter() throws Exception {
         return new JwtLoginFilter("/login", authenticationManager(),
-                jwtLoginSuccessHandler, new JwtLoginFailureHandler());
+                jwtLoginSuccessHandler, new JwtLoginFailureHandler(), objectMapper);
     }
 
     private JwtAuthFilter authFilter() throws Exception {
