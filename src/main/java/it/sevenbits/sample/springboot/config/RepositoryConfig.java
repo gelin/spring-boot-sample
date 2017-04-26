@@ -2,6 +2,7 @@ package it.sevenbits.sample.springboot.config;
 
 import it.sevenbits.sample.springboot.core.repository.JdbcTemplateItemsRepository;
 import it.sevenbits.sample.springboot.core.repository.ItemsRepository;
+import it.sevenbits.sample.springboot.core.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,12 @@ public class RepositoryConfig {
     public ItemsRepository itemsRepository(
             @Qualifier("itemsJdbcTemplate") JdbcTemplate jdbcTemplate) {
         return new JdbcTemplateItemsRepository(jdbcTemplate);
+    }
+
+    @Bean
+    public UsersRepository usersRepository(
+            @Qualifier("itemsJdbcTemplate") JdbcTemplate jdbcTemplate) {
+        return new UsersRepository(jdbcTemplate);
     }
 
 }
