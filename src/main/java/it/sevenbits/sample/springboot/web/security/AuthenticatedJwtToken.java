@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Authorization which holds unparsed and unverified JWT token.
+ * Authorization which holds subject and roles/authorities from the JWT token.
  */
 class AuthenticatedJwtToken extends AbstractAuthenticationToken {
 
