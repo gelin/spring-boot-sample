@@ -1,8 +1,10 @@
 package it.sevenbits.sample.springboot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.sevenbits.sample.springboot.web.security.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import it.sevenbits.sample.springboot.web.security.JwtAuthFailureHandler;
+import it.sevenbits.sample.springboot.web.security.JwtAuthFilter;
+import it.sevenbits.sample.springboot.web.security.JwtLoginFailureHandler;
+import it.sevenbits.sample.springboot.web.security.JwtLoginFilter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +13,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 import javax.sql.DataSource;
@@ -33,7 +33,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationSuccessHandler jwtLoginSuccessHandler;
     private final ObjectMapper objectMapper;
 
-    @Autowired
     public SecurityConfig(
             @Qualifier("itemsDataSource") final DataSource usersDataSource,
             AuthenticationProvider jwtAuthenticationProvider,
@@ -47,18 +46,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-        .csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .authorizeRequests().antMatchers("/login").permitAll()
+        http.cors();
+        http.csrf().disable();
+        http.sessionManagement().disable();
+        http.anonymous();
+        
+        http.authorizeRequests().antMatchers("/login").permitAll()
 //        .and()
 //        .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
         .and()
-        .authorizeRequests().anyRequest().authenticated()
-        .and()
-        .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
+        .authorizeRequests().anyRequest().authenticated();
+
+//        http.addFilterBefore(authFilter(), FilterSecurityInterceptor.class);
     }
 
     private JwtLoginFilter loginFilter() throws Exception {

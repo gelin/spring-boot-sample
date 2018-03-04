@@ -43,7 +43,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
             throws AuthenticationException, IOException, ServletException {
         Login login = objectMapper.readValue(request.getInputStream(), Login.class);
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword());
+                new UsernamePasswordAuthenticationToken(login.getLogin(), login.getPassword());
         return getAuthenticationManager().authenticate(authentication);
     }
 

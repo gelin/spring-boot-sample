@@ -16,12 +16,20 @@ import java.util.List;
 public class User extends ResourceSupport {
 
     private final String username;
-    private final List<String> roles;
+    private final String password;
+    private final List<String> authorities;
 
     @JsonCreator
-    public User(@JsonProperty("username") String username, @JsonProperty("roles") List<String> roles) {
+    public User(@JsonProperty("username") String username, @JsonProperty("authorities") List<String> authorities) {
         this.username = username;
-        this.roles = roles;
+        this.password = null;
+        this.authorities = authorities;
+    }
+
+    public User(String username, String password, List<String> authorities) {
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     public User(Authentication authentication) {
@@ -32,9 +40,11 @@ public class User extends ResourceSupport {
             username = principal.toString();
         }
 
-        roles = new ArrayList<>();
+        password = null;
+
+        authorities = new ArrayList<>();
         for (GrantedAuthority authority : authentication.getAuthorities()) {
-            roles.add(authority.getAuthority());
+            authorities.add(authority.getAuthority());
         }
     }
 
@@ -42,8 +52,12 @@ public class User extends ResourceSupport {
         return username;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    public String getPassword() {
+        return password;
+    }
+
+    public List<String> getAuthorities() {
+        return authorities;
     }
 
 }

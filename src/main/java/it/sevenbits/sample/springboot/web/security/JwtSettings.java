@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 /**
  * Settings to the JWT token.
@@ -26,6 +27,11 @@ public class JwtSettings {
 
     public byte[] getTokenSigningKey() {
         return tokenSigningKey.getBytes(StandardCharsets.US_ASCII);
+    }
+
+    public Duration getTokenExpiredIn() {
+        return Duration.ofHours(4);
+        // Actually should be less: about minutes, and use refresh token to update.
     }
 
 }

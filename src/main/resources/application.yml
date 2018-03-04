@@ -13,8 +13,8 @@ debug: true
 
 logging:
   level:
-    root: WARN
-    org.springframework.web: INFO
+    root: INFO
+    org.springframework.web: DEBUG
 
 jwt:
   tokenIssuer: 'denis.nelubin@7bits.it'

@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Login {
 
-    private final String username;
+    private final String login;
     private final String password;
 
     @JsonCreator
-    public Login (@JsonProperty("username") String username, @JsonProperty("password")String password) {
-        this.username = username;
+    public Login (@JsonProperty("login") String login, @JsonProperty("password")String password) {
+        this.login = login;
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
     public String getPassword() {

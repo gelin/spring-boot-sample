@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Controller to list users.
+ * Controller to display the current user.
  */
 @Controller
 @RequestMapping("/whoami")
