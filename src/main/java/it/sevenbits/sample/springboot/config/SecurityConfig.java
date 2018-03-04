@@ -1,86 +1,70 @@
 package it.sevenbits.sample.springboot.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sevenbits.sample.springboot.web.security.JwtAuthFailureHandler;
 import it.sevenbits.sample.springboot.web.security.JwtAuthFilter;
-import it.sevenbits.sample.springboot.web.security.JwtLoginFailureHandler;
-import it.sevenbits.sample.springboot.web.security.JwtLoginFilter;
-import org.springframework.beans.factory.annotation.Qualifier;
+import it.sevenbits.sample.springboot.web.security.JwtAuthSuccessHandler;
+import it.sevenbits.sample.springboot.web.security.JwtAuthenticationProvider;
+import it.sevenbits.sample.springboot.web.security.JwtTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AnyRequestMatcher;
-
-import javax.sql.DataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Spring Security configuration.
  */
 @Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    //...
 
-    private final DataSource usersDataSource;
-    private final AuthenticationProvider jwtAuthenticationProvider;
-    private final AuthenticationSuccessHandler jwtLoginSuccessHandler;
-    private final ObjectMapper objectMapper;
+//    @Autowired
+//    @Qualifier("itemsDataSource")
+//    private DataSource usersDataSource;
 
-    public SecurityConfig(
-            @Qualifier("itemsDataSource") final DataSource usersDataSource,
-            AuthenticationProvider jwtAuthenticationProvider,
-            AuthenticationSuccessHandler jwtLoginSuccessHandler,
-            ObjectMapper objectMapper) {
-        this.usersDataSource = usersDataSource;
-        this.jwtAuthenticationProvider = jwtAuthenticationProvider;
-        this.jwtLoginSuccessHandler = jwtLoginSuccessHandler;
-        this.objectMapper = objectMapper;
-    }
+    @Autowired
+    private JwtTokenService jwtTokenService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable();
+        http.formLogin().disable();
+        http.logout().disable();
         http.sessionManagement().disable();
+        http.requestCache().disable();
         http.anonymous();
-        
+
+        RequestMatcher authFilterRequests = request -> {
+            String path = request.getServletPath() + request.getPathInfo();
+            return !path.startsWith("/login");  // all paths except /login
+        };
+        JwtAuthFilter authFilter = new JwtAuthFilter(authFilterRequests);
+        authFilter.setAuthenticationSuccessHandler(new JwtAuthSuccessHandler());
+        authFilter.setAuthenticationFailureHandler(new JwtAuthFailureHandler());
+        http.addFilterBefore(authFilter, FilterSecurityInterceptor.class);
+
         http.authorizeRequests().antMatchers("/login").permitAll()
 //        .and()
 //        .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
         .and()
         .authorizeRequests().anyRequest().authenticated();
-
-//        http.addFilterBefore(authFilter(), FilterSecurityInterceptor.class);
-    }
-
-    private JwtLoginFilter loginFilter() throws Exception {
-        return new JwtLoginFilter("/login", authenticationManager(),
-                jwtLoginSuccessHandler, new JwtLoginFailureHandler(), objectMapper);
-    }
-
-    private JwtAuthFilter authFilter() throws Exception {
-        return new JwtAuthFilter(AnyRequestMatcher.INSTANCE, authenticationManager(),
-                new JwtAuthFailureHandler());
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-        .jdbcAuthentication().dataSource(usersDataSource)
-        .passwordEncoder(passwordEncoder())
-        .and()
-        .authenticationProvider(jwtAuthenticationProvider);
-    }
+//        auth.jdbcAuthentication().dataSource(usersDataSource)
+//        .passwordEncoder(new BCryptPasswordEncoder());
 
-    private PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        auth.authenticationProvider(new JwtAuthenticationProvider(jwtTokenService));
     }
 
 }

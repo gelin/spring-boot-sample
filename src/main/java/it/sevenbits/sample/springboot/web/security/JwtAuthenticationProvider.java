@@ -1,20 +1,20 @@
 package it.sevenbits.sample.springboot.web.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Component;
 
 /**
  * Authentication provider which is able to verify JWT tokens.
  */
-@Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final JwtTokenService tokenService;
 
-    @Autowired
     public JwtAuthenticationProvider(final JwtTokenService tokenService) {
         this.tokenService = tokenService;
     }
@@ -22,6 +22,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String token = String.valueOf(authentication.getCredentials());
+        logger.debug("Authenticating {}", token);
 
         try {
             return tokenService.parseToken(token);
