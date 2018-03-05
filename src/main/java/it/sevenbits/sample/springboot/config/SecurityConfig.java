@@ -43,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.requestCache().disable();
         http.anonymous();
 
+        //...
         RequestMatcher authFilterRequests = request -> {
             String path = request.getServletPath() + request.getPathInfo();
             return !path.startsWith("/login");  // all paths except /login
@@ -52,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authFilter.setAuthenticationFailureHandler(new JwtAuthFailureHandler());
         http.addFilterBefore(authFilter, FilterSecurityInterceptor.class);
 
+        //...
         http.authorizeRequests().antMatchers("/login").permitAll()
 //        .and()
 //        .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")

@@ -4,6 +4,7 @@ import it.sevenbits.sample.springboot.core.model.Item;
 import it.sevenbits.sample.springboot.core.repository.ItemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,7 @@ public class ItemsController {
         return itemsRepository.getAllItems();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Item> create(@RequestBody Item newItem) {

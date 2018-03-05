@@ -17,11 +17,11 @@ public class JwtAuthFailureHandler implements AuthenticationFailureHandler {
     
     @Override
     public void onAuthenticationFailure(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException, ServletException {
-
-        response.setContentType("application/json");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "POST /login to authorize.");
+        saveException(request, exception);
+//        response.setContentType("application/json");
+//        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "POST /login to authorize.");
     }
 
     private void saveException(HttpServletRequest request, AuthenticationException exception) {

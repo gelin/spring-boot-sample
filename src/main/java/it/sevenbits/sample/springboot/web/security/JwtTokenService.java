@@ -48,6 +48,8 @@ public class JwtTokenService {
                 .setExpiration(Date.from(now.plus(settings.getTokenExpiredIn())));
         claims.put("authorities", user.getAuthorities());
 
+        //...
+
         String token = Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, settings.getTokenSigningKey())
