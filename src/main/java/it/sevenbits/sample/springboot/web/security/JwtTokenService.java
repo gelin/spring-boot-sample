@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +56,10 @@ public class JwtTokenService {
                 .signWith(SignatureAlgorithm.HS512, settings.getTokenSigningKey())
                 .compact();
         return token;
+    }
+
+    public Duration getTokenExpiredIn() {
+        return settings.getTokenExpiredIn();
     }
 
     /**
