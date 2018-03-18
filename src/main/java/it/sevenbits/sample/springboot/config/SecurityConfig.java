@@ -1,5 +1,6 @@
 package it.sevenbits.sample.springboot.config;
 
+import it.sevenbits.sample.springboot.web.security.CookieJwtAuthFilter;
 import it.sevenbits.sample.springboot.web.security.JwtAuthFailureHandler;
 import it.sevenbits.sample.springboot.web.security.JwtAuthFilter;
 import it.sevenbits.sample.springboot.web.security.JwtAuthSuccessHandler;
@@ -48,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             String path = request.getServletPath() + request.getPathInfo();
             return !path.startsWith("/login");  // all paths except /login
         };
-        JwtAuthFilter authFilter = new JwtAuthFilter(authFilterRequests);
+        JwtAuthFilter authFilter = new CookieJwtAuthFilter(authFilterRequests);
         authFilter.setAuthenticationSuccessHandler(new JwtAuthSuccessHandler());
         authFilter.setAuthenticationFailureHandler(new JwtAuthFailureHandler());
         http.addFilterBefore(authFilter, FilterSecurityInterceptor.class);

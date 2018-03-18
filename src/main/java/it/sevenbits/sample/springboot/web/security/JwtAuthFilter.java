@@ -15,18 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * Filter to take JwtToken from the request header.
+ * Abstract filter to take JwtToken from the http request.
  */
-public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
+abstract public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private static final Pattern BEARER_AUTH_PATTERN = Pattern.compile("^Bearer\\s+(.*)$");
-    private static final int TOKEN_GROUP = 1;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public JwtAuthFilter(RequestMatcher matcher) {
         super(matcher);
@@ -34,23 +29,18 @@ public class JwtAuthFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws AuthenticationException {
         String token;
         try {
-            String authHeader = request.getHeader("Authorization");
-            // extract token from header...
-            Matcher m = BEARER_AUTH_PATTERN.matcher(authHeader);
-            if (m.matches()) {
-                token = m.group(TOKEN_GROUP);
-            } else {
-                throw new JwtAuthenticationException("Invalid Authorization header: " + authHeader);
-            }
+            token = takeToken(request);
         } catch (Exception e) {
-            logger.warn("Failed to get Authorization header: {}", e.getMessage());
+            logger.warn("Failed to get token: {}", e.getMessage());
             return anonymousToken();
         }
         return new JwtToken(token);
     }
+
+    protected abstract String takeToken(HttpServletRequest request) throws AuthenticationException;
 
     private Authentication anonymousToken() {
         return new AnonymousAuthenticationToken("ANONYMOUS", "ANONYMOUS",
